@@ -1,0 +1,1 @@
+function out1=RadToDeg(in1)in1=atan2(sin(in1),cos(in1));out1=(180.*(in1./pi));

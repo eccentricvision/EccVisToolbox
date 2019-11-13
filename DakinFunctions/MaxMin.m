@@ -1,0 +1,1 @@
+function [ret]=maxmin(val,minval,maxval)val(find(val<minval)) =minval; val(find(val>maxval)) =maxval;ret=val;

@@ -1,0 +1,1 @@
+function ishow(Object)if ~exist('Object')    Object=imresize(reshape(linspace(0,255,16),[4 4]),[512 512],'nearest');end[m n p]=size(Object);Object=real(Object);if (p==1)	imshow(NormImage(double(Object)),gray(256));else    colorM=repmat([0:255],[3 1])'./255;	imshow((Object./max(Object(:))),colorM); ;end

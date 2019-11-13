@@ -1,0 +1,1 @@
+function result=DefInput(prompt_string,default_value)default_value_string=num2str(default_value);full_prompt_string=strcat(prompt_string,sprintf(' Default is [%s] >>',default_value_string));tmp=input(full_prompt_string,'s');if isempty(tmp) 	result=default_value;else	if (isempty(str2num(tmp)))		result=tmp;	else		result=str2num(tmp);	endend

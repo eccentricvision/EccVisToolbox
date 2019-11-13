@@ -1,0 +1,1 @@
+function out1=DegToRad(in1)out1=(in1*pi)/180;

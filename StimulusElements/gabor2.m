@@ -1,0 +1,1 @@
+function [Im] = gabor(orient, lambda, phase, kon, SD, ImSize);[ x y ] = meshgrid(-ImSize/2+1:ImSize/2);circMask = (x.^2 + y.^2)<=(ImSize/2)^2;%gauss = exp(-((x/SD).^2)-((y/SD).^2));Im = kon * sin((x.*sin(orient)+y.*cos(orient))*2*pi/lambda+phase);Im = Im *circMask;
