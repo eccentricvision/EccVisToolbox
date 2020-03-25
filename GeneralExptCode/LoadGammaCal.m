@@ -14,7 +14,7 @@ function [WhereRU,LR,gamCal,gammaMethod,ExpScreen,MainScreen,TwoKBs] = LoadGamma
 numscreens = numel(screens);
 
 if strcmp('greenwood03',comp.machineName) %John's office
-    gamCal       = '/Users/john.greenwood/Documents/MATLAB/Calibration/MonitorData/LacieDaylightCalData.mat'; %select Gamma calibration files
+    gamCal       = '/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/LacieDaylightCalData.mat'; %select Gamma calibration files
     WhereRU      = 1;
     TwoKBs       = 1; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing

@@ -5,11 +5,9 @@ function [uEst,varEst,kpEst,cutEst,fb] = FitCumuGaussianWeighted(xvals,propcorr,
 % then use DrawCumuGaussian to generate a curve for plotting using these parameters
 % see FitCumuGaussWeightedDemo.m for step-by-step instructions
 % error term in the fits is weighted by how many trials there are per point
-% new in v4.0 - uses a smoothed fit to get guess parameters first before doing the fitting
-% new in v4.2 - added finer cut estimation
-% new in v4.3 - much improved pre-fitting, faster running, some error fixes and clean up
 % new in v5.1 - combined binning/smoothing pre-fits and then take the best for the smooth fitting (combines v4.3 and v5.0), plus constrained ranges for parameters
 % new in v5.2 - needed a broader range of potential variance values for curve fits to get decent range of slope/threshold values
+% new in v5.3 - trying to always fit a broader range of values in the pre-fit
 %
 % xvals=x axis, trialnum=n trials per point, propcorr=y axis (as proportion), whichFitParams? [1 1 1]; fixVals = any fixed values (where whichFitParams=0) to input, or [] if none
 % cuts = prop. correct to find x-axis val for; fb=forwards=1/backwards-1;
@@ -18,7 +16,7 @@ function [uEst,varEst,kpEst,cutEst,fb] = FitCumuGaussianWeighted(xvals,propcorr,
 % eg 1: x=linspace(-5,5,17); prob=([7 6 7 9 7 13 23 17 20 22 34 37 39 44 41 49 48])./50; [u,v,kp,cuts,fb] = FitCumuGaussianWeighted_TestFit(x,prob,50,0,0.05,[1 1 1],[],[0.25 0.5 0.75],1,1); xfine=linspace(-5,5,1000); probfit=DrawCumuGaussian(xfine,u,v,kp,0,fb); plot(x,prob,'ro',xfine,probfit,'b-');
 % eg 2: x=linspace(-5,5,25); prob=(fliplr([50 51 50 48 50 50 51 50 57 63 73 67 70 72 84 87 89 94 91 99 98 99 97 99 97])./100); [u,v,kp,cuts,fb] = FitCumuGaussianWeighted_TestFit(x,prob,100,0.5,0.05,[1 1 1],[],[0.5 0.75],-1,1); xfine=linspace(-5,5,1000); probfit=DrawCumuGaussian(xfine,u,v,kp,0.5,fb); plot(x,prob,'ro',xfine,probfit,'b-');
 %
-% John Greenwood v5.2 July 2019
+% John Greenwood v5.3, lockdown March 2020
 
 if ~exist('WhichFitParams')
     WhichFitParams=[1 1 0];
@@ -49,22 +47,17 @@ end
 opt = optimset(optimset,'MaxFunEvals',1000, 'MaxIter',1000); %opt = optimset(optimset,'MaxFunEvals',1000);
 
 %do a pre-fit to get guess parameters
-if ((range(propcorr([1 2 end-1 end]))/(1-base))<(1/4)) || numel(propcorr<4) %range of values isn't so broad (less than 1/4 of range) = add padding to help guess fit (or if low num of datapoints)
-    plusmin = round(min(xvals)-(0.5*range(xvals)));%round(xvals(1)-(2*abs(xvals(2)-xvals(1))));%min(xvals)-(range(xvals));
-    plusmax = round(max(xvals)+(0.5*range(xvals)));%round(xvals(end)+(2*abs(xvals(end)-xvals(end-1))));%max(xvals)+(range(xvals));%values added to pre-fitting to ensure full range (without influencing later fitting)
+% now always add padding to help guess fit
+    plusmin = round(min(xvals)-([2 1]*range(xvals)));%round(xvals(1)-(2*abs(xvals(2)-xvals(1))));%min(xvals)-(range(xvals));
+    plusmax = round(max(xvals)+([2 1]*range(xvals)));%round(xvals(end)+(2*abs(xvals(end)-xvals(end-1))));%max(xvals)+(range(xvals));%values added to pre-fitting to ensure full range (without influencing later fitting)
     xtemp = [plusmin xvals plusmax];
-    numT=[mean(trialnum(:)) trialnum mean(trialnum(:))];
+    numT=[mean(trialnum(:)) mean(trialnum(:)) trialnum mean(trialnum(:)) mean(trialnum(:))];
     if fb==1 %ascending
-        ytemp=[base propcorr 1];
+        ytemp=[base base propcorr 1 1];
     else %descending
-        ytemp=[1 propcorr base];
+        ytemp=[1 1 propcorr base base];
     end
-    %disp('range adjusted');
-else %range of values is sufficient to likely get a good curve fit = just estimate parameters based on this data
-    xtemp = xvals;
-    ytemp = propcorr;
-    numT  = trialnum;
-end
+
 if SmFit
     fitcnt=1; %pre-fit counter
     fittype={};

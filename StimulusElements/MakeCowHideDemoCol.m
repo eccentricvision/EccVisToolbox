@@ -11,8 +11,8 @@ apInd    = find(aperture==1);%(aperture./max(All(aperture)));
 
 %% colours
 
-gamCal='/Users/John/Documents/MATLAB/Calibration/MonitorData/CalDataDiamondPlus.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
-colCal='/Users/John/Documents/MATLAB/Calibration/MonitorData/CalDataDiamondPlusRGB.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
+gamCal='/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataDiamondPlus.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
+colCal='/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataDiamondPlusRGB.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
 
 load(gamCal); %load gamma correction functions - LR
 load(colCal); %load gamma correction for colour - Lred Lblue etc.

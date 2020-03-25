@@ -12,7 +12,9 @@ UseColour = 1;
 if ~UseColour
     ImCon   = 0.15;
 else
-    colCal='/Users/john.greenwood/Documents/MATLAB/Calibration/MonitorData/OfficeCalDataRGB.mat';
+    gamCal='/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataDiamondPlus.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
+colCal='/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataDiamondPlusRGB.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
+
     load(colCal);
     
     HueDir = 258; %251 nice blue; %255 deeper blue; 258 almost purple; 100 nice green; 90 a deeper green; 60 nice coral; 70 redder, 75 more rusty; 80 maybe burnt umber; 85 brown; 266 purple

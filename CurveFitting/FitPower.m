@@ -13,9 +13,9 @@ function [alphaEst,gammaEst,baseEst,cutEst] = FitPower(xval,yval,WhichFit,paramV
 % jgreenwood 2010
 
 % Sets up an initial guess for the three parameters
-gammaGuess = 3;%sum(abs(yval).*(inputs-meanGuess).^2)./(sum(abs(yval)));
-baseGuess = min(yval);
-alphaGuess  = (max(yval)-baseGuess)./max(xval.^gammaGuess);%gives approximate alpha value based on guess parameters %0.00001;
+gammaGuess = 3;%sum(abs(yval).*(xval-mean(xval)).^2)./(sum(abs(yval))); %3
+baseGuess  = min(yval);
+alphaGuess = (max(yval)-baseGuess)./max(xval.^gammaGuess);%gives approximate alpha value based on guess parameters %0.00001;
 
 defVals=[alphaGuess gammaGuess baseGuess]; % Default parameters for fit
 fixVals=defVals; % Parameters that will be filled in in the absence of user-provided values
@@ -29,7 +29,7 @@ if exist('paramVals')
     fixVals(find(~WhichFit))=paramVals; % If user gave us some fixed params slot them into fixVals
 end
 
-opt = optimset(optimset,'MaxFunEvals',100000);
+opt = optimset(optimset,'MaxFunEvals',100000);%,'TolFun',1e-6,'TolX',1e-6);
 [x,err1] = fminsearch(@gFitFun,guess1,opt,xval,yval,WhichFit,fixVals); % Does the fit
  
 % Make a list of the all the fit and fixed params
