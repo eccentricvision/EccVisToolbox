@@ -12,6 +12,7 @@
 % that is consinusoidally modulated from 1 to 0.
 %
 % john greenwood and sam solomon 2014, modified from some Dakin code
+% e.g. imagesc(MakeCosineRing(256,40,100,20,0,0)); axis square; colormap(gray(256))
 %
 function resFinal=MakeCosineRing(m,inrad,outrad,band,x1,y1)
 if ~exist('x1')

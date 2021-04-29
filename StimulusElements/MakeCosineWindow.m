@@ -1,19 +1,21 @@
+function res=MakeCosineWindow(m,rad,band,x1,y1)
 % MakeCosineWindow
 %
 % res=MakeCosineWindow(m,rad,band)
-% Makes an image containing a cosinusoidally windowed disk.
+% Makes an image containing a cosinusoidally windowed disk/circle.
 % m is image dimension, rad is disk radius, band is the
 % width of the band around the disk edge to be cosinusoidally 
 % modulated. Result is a 0-1 scaled (double) matrix.
+% NB first value m can be input as a matrix [m n] if rectangular image is desired
 %
 % e.g. imagesc(MakeCosineWindow(256,100,20)); axis square; colormap(gray(256))
 % shows a 256X256 image containing a disk of radius 100 pixels
 % with an outer band, extending from 90-110 pixels from the centre,
 % that is consinusoidally modulated from 1 to 0.
 %
-% steven dakin (s.dakin@ucl.ac.uk)
+% code by steven dakin (s.dakin@ucl.ac.uk), modified J Greenwood April 2021
 %
-function res=MakeCosineWindow(m,rad,band,x1,y1)
+
 if ~exist('x1')
     x1=0;
 end

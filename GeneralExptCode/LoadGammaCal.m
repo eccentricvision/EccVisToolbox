@@ -22,7 +22,7 @@ if strcmp('greenwood03',comp.machineName) %John's office
     MainScreen   = 1; %min(screens)
 elseif strcmp('eplt02',comp.machineName) %John's macbook
     WhereRU      = 2;
-    gamCal       = '/Users/John/Documents/MATLAB/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
+    gamCal       = '/Users/John/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
     TwoKBs       = 0; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen    = 2; %max(screens)

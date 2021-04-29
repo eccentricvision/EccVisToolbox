@@ -31,9 +31,9 @@ end
 if UseColour==1
     switch sp.WhereRU %1=Office, 2=Lab, 3=Laptop
         case 1 %in John's Office
-            colCal='/Users/john.greenwood/Documents/MATLAB/Calibration/MonitorData/OfficeCalDataRGB.mat'; %select Gamma calibration files
+            colCal='/Users/john.greenwood/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/OfficeCalDataRGB.mat'; %select Gamma calibration files
         case 2 %laptop
-            colCal='/Users/John/Documents/MATLAB/Calibration/MonitorData/CalDataRGB.mat';
+            colCal='/Users/John/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataRGB.mat';
         case 3 %in the lab
             colCal='/Users/Lab/Documents/MATLAB/Calibration/MonitorData/CalDataDiamondPlusRGB.mat'; %the Gamma calibration file in the same directory (change this if it's elsewhere)
         case 9 %new office iMac
