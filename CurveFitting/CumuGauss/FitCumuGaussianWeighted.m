@@ -1,13 +1,15 @@
-function [uEst,varEst,kpEst,cutEst,fb] = FitCumuGaussianWeighted(xvals,propcorr,trialnum,base,maxKP,WhichFitParams,fixVals,cuts,fb,SmFit)
+function [uEst,varEst,kpEst,cutEst,fb,err1] = FitCumuGaussianWeighted(xvals,propcorr,trialnum,base,maxKP,WhichFitParams,fixVals,cuts,fb,SmFit)
 % FitCumuGaussianWeighted
-% [uEst,varEst,kpEst,cutEst,fb] = FitCumuGaussianWeighted(xvals,propcorr,trialnum,base,maxKP,WhichFitParams,fixVals,cuts,fb,SmFit)
-% returns mean estimate, variance of underlying Gaussian (slope), and keypress error plus fb (ie forwards/backwards function)
+% [uEst,varEst,kpEst,cutEst,fb,err1] = FitCumuGaussianWeighted(xvals,propcorr,trialnum,base,maxKP,WhichFitParams,fixVals,cuts,fb,SmFit)
+% returns mean estimate, variance of underlying Gaussian (slope), and
+% keypress error plus fb (ie forwards/backwards function), plus LSE (weighted) as err1
 % then use DrawCumuGaussian to generate a curve for plotting using these parameters
 % see FitCumuGaussWeightedDemo.m for step-by-step instructions
 % error term in the fits is weighted by how many trials there are per point
 % new in v5.1 - combined binning/smoothing pre-fits and then take the best for the smooth fitting (combines v4.3 and v5.0), plus constrained ranges for parameters
 % new in v5.2 - needed a broader range of potential variance values for curve fits to get decent range of slope/threshold values
 % new in v5.3 - trying to always fit a broader range of values in the pre-fit
+% new in v5.4 - returns err1 value (weighted)
 %
 % xvals=x axis, trialnum=n trials per point, propcorr=y axis (as proportion), whichFitParams? [1 1 1]; fixVals = any fixed values (where whichFitParams=0) to input, or [] if none
 % cuts = prop. correct to find x-axis val for; fb=forwards=1/backwards-1;
@@ -16,7 +18,7 @@ function [uEst,varEst,kpEst,cutEst,fb] = FitCumuGaussianWeighted(xvals,propcorr,
 % eg 1: x=linspace(-5,5,17); prob=([7 6 7 9 7 13 23 17 20 22 34 37 39 44 41 49 48])./50; [u,v,kp,cuts,fb] = FitCumuGaussianWeighted_TestFit(x,prob,50,0,0.05,[1 1 1],[],[0.25 0.5 0.75],1,1); xfine=linspace(-5,5,1000); probfit=DrawCumuGaussian(xfine,u,v,kp,0,fb); plot(x,prob,'ro',xfine,probfit,'b-');
 % eg 2: x=linspace(-5,5,25); prob=(fliplr([50 51 50 48 50 50 51 50 57 63 73 67 70 72 84 87 89 94 91 99 98 99 97 99 97])./100); [u,v,kp,cuts,fb] = FitCumuGaussianWeighted_TestFit(x,prob,100,0.5,0.05,[1 1 1],[],[0.5 0.75],-1,1); xfine=linspace(-5,5,1000); probfit=DrawCumuGaussian(xfine,u,v,kp,0.5,fb); plot(x,prob,'ro',xfine,probfit,'b-');
 %
-% John Greenwood v5.3, lockdown March 2020
+% John Greenwood v5.4, August 2021
 
 if ~exist('WhichFitParams')
     WhichFitParams=[1 1 0];

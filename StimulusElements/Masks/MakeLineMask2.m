@@ -2,8 +2,7 @@ function [MaskIm,mNew,nNew]=MakeLineMask2(m,n,TeeSize,NumTemplate,con)
 %m/n=patchsize,TeeSize,NumTemp=no of cross templates tiled (min of ~9), orientation,contrast
 %all lines are cardinal. If not, input range e.g. [-15 15] of rotations to apply
 %returns mask image, m and n as the size dimensions are changed to fit all stimuli
-%[mask,Xsize,Ysize]=MakeLineMask(400,200,55,9,0,0,1); imshow(mask);
-%or with random rotations:  [mask,Xsize,Ysize]=MakeLineMask2(400,200,55,9,1); imshow(mask);
+%eg with random rotations:  [mask,Xsize,Ysize]=MakeLineMask2(400,200,55,9,1); imshow(mask);
 %generates an image of randomly positioned line elements similar to MakeCrowdedCrosses
 
 if ~exist('con')
