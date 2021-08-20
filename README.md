@@ -22,4 +22,4 @@ Includes the folders:
 
 -StimulusElements (code to generate images for presentation, e.g. via Psychtoolbox, including Landolt-Cs, Gabors, etc)
 
-
+[![DOI](https://zenodo.org/badge/221470018.svg)](https://zenodo.org/badge/latestdoi/221470018)
