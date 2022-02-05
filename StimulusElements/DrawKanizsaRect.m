@@ -1,5 +1,5 @@
-function RectIm = DrawKanizsaRect(PatchX,PatchY,RectSizeX,RectSizeY,CircRad,CircRot,PhysContour,LineWidth)
-%function RectIm = DrawKanizsaRect(PatchX,PatchY,RectSizeX,RectSizeY,CircRad,CircRot,PhysContour,LineWidth);
+function RectIm = DrawKanizsaRect(PatchX,PatchY,RectSizeX,RectSizeY,CircRad,CircRot,PhysContour,LineWidth,ShapeOrient)
+%function RectIm = DrawKanizsaRect(PatchX,PatchY,RectSizeX,RectSizeY,CircRad,CircRot,PhysContour,LineWidth,ShapeOrient);
 %DrawKanizsaRect.m
 %
 %function to make illusory 'Kanizsa' Rectangle with or without rotation
@@ -8,15 +8,21 @@ function RectIm = DrawKanizsaRect(PatchX,PatchY,RectSizeX,RectSizeY,CircRad,Circ
 %inputs: PatchX,PatchY = dimensions of image patch
 % RectSizeX,RectSizeY = centre-to-centre distance for PacMan/Circle elements on corners of the illusory rectangle
 % CircRad = radius of PacMan/circle elements
-% CircRot = rotation of PacMan/circle elements with reference to the
-% top-left element (as in R&S 1996): -ve makes pinched/thin, +ve makes pulled/fat
+% CircRot = rotation of PacMan/circle elements with reference to the top-left element (as in R&S 1996): -ve makes pulled/fat, +ve makes pinched/thin
 % PhysContour = 0/1 where 0=illusory rectangle, 1=physical contour drawn (using a parabolic function fit to the image)
 % LineWidth = width of physical contour if present (extending outwards from centre of image)
+% ShapeOrient  = rotation of the whole Kanizsa shape (to minimise cues from orientation of individual PacMan elements), where -ve = clockwise & +ve = counterclockwise
 %
-%J Greenwood w/ Jade Bouffard, October 2021
+%J Greenwood w/ Jade Bouffard, v2 Jan 2022 (v2 adds shape orientation)
 %
-% e.g.: RectIm = DrawKanizsaRect(1000,1000,200,400,60,-10,0,NaN); imshow(RectIm)
-% e.g2: RectIm = DrawKanizsaRect(1000,1000,200,400,60,10,1,3); imshow(RectIm)
+% e.g.: RectIm = DrawKanizsaRect(1000,1000,200,400,60,-10,0,NaN,10); imshow(RectIm)
+% e.g2: RectIm = DrawKanizsaRect(1000,1000,200,400,60,10,1,3,5); imshow(RectIm)
+
+%% stimulus parameters
+
+if nargin==8 %inputs should be 9 but if the final one is missing, set to zero
+    ShapeOrient=0;
+end
 
 %clear all;
 %circle and kanizsa rectangle parameters (now set by function input)
@@ -48,6 +54,8 @@ CircCentX   = halfpx+CircOffsetX;
 CircCentY   = halfpy+CircOffsetY;
 
 CircAng     = [180-CircRot 270+CircRot 90+CircRot 0-CircRot]; %top-right,top-left,bottom-left,bottom-right (45 135 225 315)
+
+%% draw the Kanizsa rectangle
 
 RectIm = zeros(PatchY,PatchX);
 for cc=1:4
@@ -121,8 +129,8 @@ if PhysContour==1 %physical contour only
     HorzY = round(HorzY);
     
     %plot to check
-    %     figure; plot(PacMouthLocX,PacMouthLocY,'o',CircOffsetX,-CircOffsetY,'ko'); axis equal
-    %     hold on; plot(VertX',VertY','r-'); plot(HorzX',HorzY','k-');
+%          figure; plot(PacMouthLocX,PacMouthLocY,'o',CircOffsetX,-CircOffsetY,'ko'); axis equal
+%          hold on; plot(VertX',VertY','r-'); plot(HorzX',HorzY','k-');
     
     %find line locations in meshgrid
     Tol             = 1; %tolerance for equality checks
@@ -151,6 +159,12 @@ if PhysContour==1 %physical contour only
             
         end
     end
+end
+
+if ShapeOrient==0
+    %do nothing
+else
+    RectIm = imrotate(RectIm,ShapeOrient,'bilinear','crop');
 end
 
 RectIm = 1-RectIm; %standard is for black circles on white BG

@@ -5,7 +5,9 @@ http://eccentricvision.com
 
 Mostly by John Greenwood (except as noted)
 
-Feel free to use the code, but please credit the toolbox, as per the GNU License. Comments and readme files are somewhat incomplete at present, but I'm working to update these at present. There may be some functions in here written by others, which I'm working to separate out in time. 
+Please feel free to use our code for your own work. If you find it useful, please cite it as: Greenwood, J. A. (2021). Eccentric Vision Toolbox [Computer software]. https://doi.org/10.5281/zenodo.5226336
+
+Comments and readme files are somewhat incomplete at present, but I'm working to update these at present. There may be some functions in here written by others, which I hope I've indicated appropriately.
 
 Includes the folders:
 ------------------------------------------
