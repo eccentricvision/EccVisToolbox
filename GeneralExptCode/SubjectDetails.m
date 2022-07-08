@@ -13,11 +13,13 @@ else %get the inputs and save the file, return 'subject' as well
     subject.Init   = Initials;%initials
     subject.Age    = DefInput('Subject Age (Yrs)?',99); %age
     
-    subject.Gender = DefInput('Gender? 0=Male, 1=Female',1); %gender
+    subject.Gender = DefInput('Gender? 0=Male, 1=Female, 2=Other',1); %gender
     if subject.Gender==0
         subject.GenderLabel = 'male  ';
-    else %an else here is a little cis-gender I guess but we can change this should a transgender person ever arrive
+    elseif subject.Gender==1 %an else here is a little cis-gender I guess but we can change this should a transgender person ever arrive
         subject.GenderLabel = 'female';
+    else 
+        subject.GenderLabel = 'other';
     end
     
     subject.Hand   = DefInput('Handedness? 0=Left, 1=Right',1); %handedness

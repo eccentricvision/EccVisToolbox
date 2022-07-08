@@ -1,11 +1,10 @@
-function [MaskIm,mNew,nNew]=MakeRandomLineMask(PatchX,PatchY,LineLength,orient,con,mixedpol)
-% [MaskIm,mNew,nNew]=MakeRandomLineMask(PatchX,PatchY,LineLength,orient,con,mixedpol)
+function [MaskIm,mNew,nNew]=MakeRandomLineMask(PatchX,PatchY,LineLength,orient,con)
+% [MaskIm,mNew,nNew]=MakeRandomLineMask(PatchX,PatchY,LineLength,orient,con)
 % derived from MakeLineMask and MakeLineMask2 (which actually use crosses) - here just randomly placed line strokes
 % input PatchX/Y=patchsize,LineLength (width = 1/5 length), orient is an array of deg vals e.g. [0 90], contrast
 % returns mask image, m and n as the size dimensions are changed to fit all stimuli
-% mixedpol = 0/1 where 0=all same polarity, 1=black/white
 %
-% e.g. [mask,Xsize,Ysize]=MakeRandomLineMask(400,200,55,[0 90],1,0); imshow(mask);
+% e.g. [mask,Xsize,Ysize]=MakeRandomLineMask(400,200,55,[0 90],1); imshow(mask);
 %
 % J Greenwood July 2021
 
@@ -23,7 +22,7 @@ NumLineIm = numel(orient); %how many images to draw (one per orientation)
 
 %draw the line element (to be repeated across the image)
 for nl=1:NumLineIm
-    [LineIm(:,:,nl),LineInd(:,:,nl)] = DrawLineElement(PatchSize,LineLength,LineWidth,orient(nl));
+    LineIm(:,:,nl) = DrawLineElement(PatchSize,LineLength,LineWidth,orient(nl));
 end
 masksize = size(LineIm);
 halfx    = round(masksize(2)/2);
@@ -60,27 +59,15 @@ LinePosY(LinePosY>max(Yrow))=max(Yrow);
 PatchXnew=round(max(LinePosX(:))+(masksize(2)/2)); %make sure the images will fit
 PatchYnew=round(max(LinePosY(:))+(masksize(1)/2));
 
-if mixedpol
-pol = [1 -1];
-else
-    pol = [1 1];
-end
-
 MaskIm=zeros(PatchYnew,PatchXnew);
 xc=1;yc=1;
-%LineTemp = LineIm(:,:,WhichOrient(1,1)); %make a white line element
 for yy=1:numel(Yrow)
     for xx=1:numel(Xrow)
-        MaskTemp = MaskIm(LinePosY(yy,xx)-halfy:LinePosY(yy,xx)-halfy+(masksize(1)-1),LinePosX(yy,xx)-halfx:LinePosX(yy,xx)-halfx+(masksize(2)-1));
-        LineTemp = LineIm(:,:,WhichOrient(yy,xx));
-        %LineInd  = find(LineTemp(LineTemp==1)); %get the indices of the line
-        LineTemp(LineInd(:,:,WhichOrient(yy,xx))) = LineTemp(LineInd(:,:,WhichOrient(yy,xx))).*pol(round((rand(1,1)+1)));
-        MaskTemp(LineInd(:,:,WhichOrient(yy,xx))) = LineTemp(LineInd(:,:,WhichOrient(yy,xx)));
-        MaskIm(LinePosY(yy,xx)-halfy:LinePosY(yy,xx)-halfy+(masksize(1)-1),LinePosX(yy,xx)-halfx:LinePosX(yy,xx)-halfx+(masksize(2)-1)) = MaskTemp;
+        MaskIm(LinePosY(yy,xx)-halfy:LinePosY(yy,xx)-halfy+(masksize(1)-1),LinePosX(yy,xx)-halfx:LinePosX(yy,xx)-halfx+(masksize(2)-1))=...
+            MaskIm(LinePosY(yy,xx)-halfy:LinePosY(yy,xx)-halfy+(masksize(1)-1),LinePosX(yy,xx)-halfx:LinePosX(yy,xx)-halfx+(masksize(2)-1)) + LineIm(:,:,WhichOrient(yy,xx));
     end
 end
 MaskIm(MaskIm>1)=1; %correct for range
-MaskIm(MaskIm<-1)=-1;
 MaskIm(MaskIm>con)=con; %correct for overlapping contrast regions
 
 %MaskIm = ImClip(MaskIm,[n+ceil(TeeSize) m+ceil(TeeSize)]);
