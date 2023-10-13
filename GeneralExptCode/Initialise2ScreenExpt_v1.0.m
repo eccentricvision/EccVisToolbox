@@ -4,7 +4,7 @@
 %v2.0 J Greenwood Nov 2022
 
 
-multisample = 1; %Experiment with this - can help with small disparities
+% multisample = 1; %Experiment with this - can help with small disparities
 % screenNum = max(Screen('Screens'));
 % screenRes = Screen('Resolution', screenNum);
 % screenSizePix = [screenRes.width screenRes.height];
@@ -16,7 +16,7 @@ screens = Screen('Screens'); %if on PC, will be 0/1/2, otherwise 0/1
 comp    = Screen('Computer'); %get the computer details
 
 if IsOSX %some hacks to make psychtoolbox work even with slightly odd timestamps
-    Screen('Preference','SkipSyncTests',2); %Screen('Preference', 'VBLTimestampingMode', 0);
+    Screen('Preference','SkipSyncTests',0); %Screen('Preference', 'VBLTimestampingMode', 0);
     %Screen('Preference', 'ConserveVRAM',8192);%16384);%4096); %enables kPsychUseBeampositionQueryWorkaround - hopefully fixes issue with PTB not detecting the VBL values
     %[maxStddev, minSamples, maxDeviation, maxDuration] = Screen('Preference','SyncTestSettings',0.01,[],[]);% [, maxStddev=0.001 secs][, minSamples=50][,maxDeviation=0.1][, maxDuration=5 secs]);
 end
@@ -101,6 +101,8 @@ PsychImaging('PrepareConfiguration');
 
 % BitsSharpHandle = BitsPlusPlus('OpenBits#');
 %[windowPtr, windowRect] = PsychImaging('OpenWindow', screenNum,mgrey, [], [], [], [],multisample);
+
+Screen('BlendFunction', windowPtr, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 %now draw to experimental monitor
 [w screenRect]=Screen('OpenWindow',screens(ExpScreen), 0,[],[],[],[],multisample); %max(Screens)

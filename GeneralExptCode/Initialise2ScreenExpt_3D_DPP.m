@@ -1,4 +1,4 @@
-%Initialise2ScreenExpt
+%Initialise2ScreenExpt_3D_DPP
 %screen and graphics initialisation for psychophysical tasks with a main computer and a secondary experiment screen
 %needs blackout as a variable to already be set
 %v2.0 J Greenwood Nov 2022
@@ -14,6 +14,7 @@ multisample = 1; %Experiment with this - can help with small disparities
 AssertOpenGL;
 screens = Screen('Screens'); %if on PC, will be 0/1/2, otherwise 0/1
 comp    = Screen('Computer'); %get the computer details
+PsychDefaultSetup(2); %converts colour space to 0-1 instead of old 0-255
 
 if IsOSX %some hacks to make psychtoolbox work even with slightly odd timestamps
     Screen('Preference','SkipSyncTests',2); %Screen('Preference', 'VBLTimestampingMode', 0);
@@ -22,7 +23,7 @@ if IsOSX %some hacks to make psychtoolbox work even with slightly odd timestamps
 end
 
 if IsWin
-    FileLoc = which('Initialise2ScreenExpt');
+    FileLoc = which('Initialise2ScreenExpt_3D_DPP');
     
     username=getenv('USERNAME'); %get windows username
     if strcmp(username,'JohnG') %then you're in Moorfields - hacky way to set a different computer name
@@ -51,6 +52,11 @@ if UseColour==1
     end
     load(colCal); %load gamma correction for colour -ie loads Lred Lblue Lgreen.
 end
+
+PsychImaging('PrepareConfiguration');
+PsychImaging('AddTask', 'General', 'InterleavedLineStereo', 0);
+PsychImaging('AddTask', 'General', 'FloatingPoint32Bit');
+PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'ClampOnly');
 
 switch gammaMethod
     case 0 %no extra methods, just gamma correction
@@ -93,25 +99,24 @@ if blackout
     Screen('Flip', w2);
 end
 
-%PsychDefaultSetup(2); %converts colour space to 0-1 instead of old 0-255
-PsychImaging('PrepareConfiguration');
-% PsychImaging('AddTask', 'General', 'InterleavedLineStereo', 0);
-% PsychImaging('AddTask', 'General', 'FloatingPoint32Bit');
-% PsychImaging('AddTask', 'FinalFormatting', 'DisplayColorCorrection', 'ClampOnly');
-
 % BitsSharpHandle = BitsPlusPlus('OpenBits#');
 %[windowPtr, windowRect] = PsychImaging('OpenWindow', screenNum,mgrey, [], [], [], [],multisample);
 
 %now draw to experimental monitor
-[w screenRect]=Screen('OpenWindow',screens(ExpScreen), 0,[],[],[],[],multisample); %max(Screens)
-sp.centX=screenRect(3)/2;
-sp.centY=screenRect(4)/2;
+w=PsychImaging('OpenWindow', screens(ExpScreen), 0, [], [], [], [],multisample);%Screen('OpenWindow',screens(ExpScreen), 0,[],[],[],[],multisample); %max(Screens)
 
 %Screen parameters
-sp.ScreenResX   = screenRect(3); %screen size in pixels
-sp.ScreenResY   = screenRect(4);
+screenRes     = Screen('Resolution', screens(ExpScreen));
+screenSizePix = [screenRes.width screenRes.height];
+sp.ScreenResX   = screenRes.width; %screen size in pixels
+sp.ScreenResY   = screenRes.height;
+
+sp.centX=sp.ScreenResX/2;
+sp.centY=sp.ScreenResY/2;
+% sp.ScreenResX   = screenRect(3); %screen size in pixels
+% sp.ScreenResY   = screenRect(4);
 if IsOSX %then likely using a CRT monitor - set up for the Sony Trinitron in the lab
-    if sp.WhereRU==9 %display++
+    if sp.WhereRU==6 %display++
         sp.ScreenSizeX  = 71.0; %screen size in centimetres
         sp.ScreenSizeY  = 39.5;
     else %CRT
@@ -125,6 +130,11 @@ end
 sp.PixelScale   = mean([sp.ScreenSizeX./sp.ScreenResX sp.ScreenSizeY./sp.ScreenResY]);%0.035; %size of pixels in cm (take average of X/Y dimensions to assume square pixels)
 sp.WhichScreen  = ExpScreen; %taken from LoadGammaCal now
 
+sp.centX        = sp.ScreenResX/2;
+sp.centY        = sp.ScreenResY/2; %find the x/y centre of the screen
+
+sp.ScreenResY   = sp.ScreenResY/2; %effective screenRes on y-axis is halved due to the stereo presentation (after the pixel scale is worked out)
+
 if gammaMethod==1 %bits box
     bitsPlusRect = [0     0   524     1];               % The window we  write the Bits++ CLUT into
     newClutRow = BitsPlusEncodeClutRow((2^16-1).*hsv(256));  % Encode CLUT  ('hsv') using PTB routine
@@ -133,9 +143,14 @@ if gammaMethod==1 %bits box
     vbl=Screen('Flip', w);
 end
 
+mgrey=mgrey./255;
+
 %draw blank screen
-Screen('BlendFunction', w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-Screen('FillRect',w,mgrey);
+for eye=1:2
+    Screen('SelectStereoDrawBuffer', w, eye-1); %left eye then right eye
+    Screen('BlendFunction', w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Screen('FillRect',w,mgrey);
+end
 Screen('Flip', w);
 
 % Query duration of monitor refresh interval:

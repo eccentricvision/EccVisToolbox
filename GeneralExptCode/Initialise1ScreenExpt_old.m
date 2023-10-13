@@ -12,16 +12,14 @@ if IsOSX %some hacks to make psychtoolbox work even with slightly odd timestamps
     Screen('Preference','SkipSyncTests',0); %Screen('Preference', 'VBLTimestampingMode', 0);
     Screen('Preference', 'ConserveVRAM',8192);%16384);%4096); %enables kPsychUseBeampositionQueryWorkaround - hopefully fixes issue with PTB not detecting the VBL values
     [maxStddev, minSamples, maxDeviation, maxDuration] = Screen('Preference','SyncTestSettings',0.01,[],[]);% [, maxStddev=0.001 secs][, minSamples=50][,maxDeviation=0.1][, maxDuration=5 secs]);
-else %IsPC
-     Screen('Preference', 'ConserveVRAM',4096); %enables kPsychUseBeampositionQueryWorkaround - hopefully fixes issue with PTB not detecting the VBL values
 end
 
 if IsWin
     FileLoc = which('Initialise1ScreenExpt.m');
     
-    if strcmp(FileLoc,'C:\Documents\MATLAB\EccVisToolbox\GeneralExptCode\Initialise1ScreenExpt.m'); %nVidia PC in MEH (was Exp Psych lab 439)
+    if strcmp(FileLoc,'C:\Documents\MATLAB\GeneralExptCode\Initialise1ScreenExpt.m'); %PC in Exp Psych lab 439
         comp.machineName = 'greenwood01'; %hacky way to give the computer a machine name since this is broken in Windows 7/Vista
-    elseif strcmp(FileLoc,'C:\Users\JohnG\MATLAB\GeneralExptCode\Initialise1ScreenExpt.m') %old VacMan nVidia machine from the lab at Moorfields
+    elseif strcmp(FileLoc,'C:\Users\JohnG\MATLAB\GeneralExptCode\Initialise1ScreenExpt.m') %in the lab at Moorfields
         comp.machineName = 'DakinLab01'; %hack as above
     else
         comp.machineName = 'Unknown';

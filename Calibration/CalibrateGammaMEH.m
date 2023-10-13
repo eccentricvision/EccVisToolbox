@@ -2,7 +2,6 @@
 % function to calibrate the gamma of a CRT (achromatic)
 % made by S Dakin, modified J Greenwood 2012
 
-
 thisFile='CalibrateGamma.m';
 ThisDirectory=which(thisFile); ThisDirectory=ThisDirectory(1:end-length(thisFile));
 
@@ -34,7 +33,12 @@ if numel(screens)>1
 end
 
 if IsWindows %use screen 1
-    screenNumber=screens(1);%1;%max(screens);
+    %screenNumber=screens(1);%1;%max(screens);
+        if numel(screens)>1
+        screenNumber=screens(numel(screens)-1);%;screens(3);
+    else
+        screenNumber=screens(1);
+    end
 else %use max screens
     screenNumber=max(screens);
 end
@@ -51,7 +55,7 @@ if IsWindows %might need to hide the taskbar
     ShowHideWinTaskbarMex(0)
 end
 
-m=128; n=128; p=3;                                  % Image dimensions
+m=256; n=256; p=3;                                  % Image dimensions
 rgbImage=zeros(m,n,p);                              % This will be our RGB stimulus
 
 NoSamps=16;
@@ -59,37 +63,40 @@ V=linspace(0,2^8-1,NoSamps);
 tab1=repmat([1:256]',[1 3])./256  ;
 Screen('LoadNormalizedGammaTable', w, tab1,1);
 % 
-% for i=1:NoSamps
-%     RampImage=zeros(m,n)+V(i);
-%     rgbImage(:,:,1)=RampImage;
-%     rgbImage(:,:,2)=RampImage;
-%     rgbImage(:,:,3)=RampImage;
-%     imText =Screen('MakeTexture', w, rgbImage);             % Make the image texture
-%     Screen('DrawTexture', w, imText, [], [], 0);            % Draw all textures
-%     vbl=Screen('Flip', w);
-%     %L(i) = CalLumInput('Enter luminance (cd/m2)',50);  % replace this with pause()
-%     pause();
-%     Screen('Close',imText);
-% end
- L=[0.18 0.41 1.39 3.40 6.22 10.3 16.7 25.8 37.2 51.8 69.1 89.7 111 145 180 222];
-Screen('FillRect',w, BGcol);%[128 128 128]); % this is grey - in Mono++ the blue carries the LUT index
-vbl=Screen('Flip', w);
+%  for i=1:NoSamps
+%      RampImage=zeros(m,n)+V(i);
+%      rgbImage(:,:,1)=RampImage;
+%      rgbImage(:,:,2)=RampImage;
+%      rgbImage(:,:,3)=RampImage;
+%      imText =Screen('MakeTexture', w, rgbImage);             % Make the image texture
+%      Screen('DrawTexture', w, imText, [], [], 0);            % Draw all textures
+%      vbl=Screen('Flip', w);
+%      %L(i) = CalLumInput('Enter luminance (cd/m2)',50);  % replace this with pause()
+%      KbWait;
+%      pause(0.5);
+%      Screen('Close',imText);
+%  end
+ 
+L=[0.18 0.58 2.06 4.70 8.38 13.4 20.6 30.9 43.4 59.0 77.9 100 128 156 188 227];%[0.18 0.41 1.39 3.40 6.22 10.3 16.7 25.8 37.2 51.8 69.1 89.7 111 145 180 222];
 
-%figure
+Screen('FillRect',w, BGcol);%[128 128 128]); % this is grey - in Mono++ the blue carries the LUT index
+ vbl=Screen('Flip', w);
+
+figure
 LR=SimpleFitPower(V,L);
 % 
-% WhereRU  = DefInput('Where are you? 1=Lab 2=Office? 3=CinemaHD 4=Elsewhere',4);
-% if WhereRU==1
-%     fN = 'LabCalData.mat';
-% elseif WhereRU==2
-%     fN = 'OfficeCalData.mat';
-% elseif WhereRU==3
-%     fN = 'CinemaHDcaldata.mat';
-% else
-%     fN = 'CalData.mat';
-% end
-% defFname = DefInput('Where to save calibration file? ',sprintf('%s%c',ThisDirectory,fN));
-% save(defFname,'LR')
+ WhereRU  = DefInput('Where are you? 1=Lab 2=Office? 3=CinemaHD 4=Elsewhere',4);
+ if WhereRU==1
+     fN = 'LabCalData.mat';
+ elseif WhereRU==2
+    fN = 'OfficeCalData.mat';
+ elseif WhereRU==3
+     fN = 'CinemaHDcaldata.mat';
+ else
+     fN = 'CalData.mat';
+ end
+ defFname = DefInput('Where to save calibration file? ',sprintf('%s%c',ThisDirectory,fN));
+ save(defFname,'LR')
 
 linearLum=linspace(LR.LMin,LR.LMax,8);
 
@@ -101,12 +108,15 @@ for i=1:length(linearLum)
     vbl=Screen('Flip', w);
     Screen('Close',imText);
     %newL(i) = CalLumInput('Enter luminance (cd/m2)',50);  % replace this with pause()
-    pause();
+    KbWait;%pause();
+    pause(0.5);
 end
-newL = [0.17 28.6 56.2 86.6 119 149 181 217];
- figure
- plot(linearLum,newL,'o',linearLum,linearLum,'-');
- Screen('CloseAll')
+
+ newL = [0.18 31.3 62.2 94.7 131 160 193 227];%[0.17 28.6 56.2 86.6 119 149 181 217];
+  figure
+  plot(linearLum,newL,'o',linearLum,linearLum,'-');
+  
+ Screen('CloseAll');
 
 if IsWindows %might need to restore the taskbar
     ShowHideWinTaskbarMex(1)

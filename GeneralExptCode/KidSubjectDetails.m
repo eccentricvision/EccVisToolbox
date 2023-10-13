@@ -47,7 +47,7 @@ else %get the inputs and save the file, return 'subject' as well
 %         else
 %             subject.DomEyeLabel = 'right';
 %         end
-    else %child with amblyopia
+    elseif Group==1 %child with amblyopia
         subject.AmbEye   = DefInput('Amblyopic Eye? 0=Left, 1=Right',0); %which eye has amblyopia
         subject.AmbType  = DefInput('Amblyopia type? 1=Strab, 2=Aniso, 3=Both, 4=Other',1);
         switch subject.AmbType
@@ -61,6 +61,9 @@ else %get the inputs and save the file, return 'subject' as well
                 subject.AmbLabel = 'Other';
         end
         subject.TestSession = 1; %test session is 1 if this is the first time the code is being run (denotes how many times this child has been seen before)
+    elseif Group==2 %CRB1 kids
+        subject.GroupLabel = 'CRB1';
+        subject.logMARval  = DefInput('Enter orthoptic logMAR acuity',0);
     end
     
     disp('  '); %some space to separate the input options a little

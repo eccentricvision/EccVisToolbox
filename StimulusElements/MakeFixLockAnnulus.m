@@ -1,53 +1,72 @@
-function [MaskIm,mNew,nNew]=MakeRingMask(m,n,RingRad,PixelJitter,con)
-%m/n=patchsize,RingRad,PixelJitter (how much to perturb positions),contrast
-%returns mask image, m and n as the size dimensions are changed to fit all stimuli
-% eg [mask,Xsize,Ysize]=MakeRingMask(400,200,20,200/20,1); imshow(mask);
+function [MaskIm,xSize,ySize]=MakeFixLockAnnulus(AnnRad,AnnWidth,RingRad,LineWidth,MaxDisparity,con)
+% [MaskIm,xSize,ySize]=MakeFixLockHalfAnnulus(AnnRad,AnnWidth,RingRad,LineWidth,MaxDisparity,con,LRUD)
+% AnnRad,AnnWidth are for the total annulus
+% RingRad,LineWidth for the constituent circles
+% MaxDisparity determines the max +/- pos shifts,contrast,LRUD = 0/1/2/3 for left/right/up/down config
+% returns two mask images: LE,RE
+% J Greenwood May 2014, updated Nov 2022
+% eg [mask]=MakeFixLockAnnulus(450,200,10,2,3,1); mask2(:,:,1) = mask(:,:,1); mask2(:,:,2) = zeros(size(mask(:,:,1))); mask2(:,:,3) = mask(:,:,2); imshow(mask2);
+%eg2 [mask]=MakeFixLockAnnulus(150,100,7,2,3,1); mask2(:,:,1) = mask(:,:,1); mask2(:,:,2) = zeros(size(mask(:,:,1))); mask2(:,:,3) = mask(:,:,2); imshow(mask2);
 
 if ~exist('con')
     con=1;
 end
 
-LineWidth = RingRad/2.5; %line width always multiples of 5 to the diameter
-mscaleX = m/(m);% + ((2*RingRad+1)+1)*0.75); %scaling factor for masksize with a higher no of elements
-mscaleY = n/(n);% + ((2*RingRad+1)+1)*0.75);
-SizeMult = 2; %multiplier for size of each cross element on the final mask
+xTot = (AnnRad*2)+(RingRad*2); %full circle on the x-axis
+yTot = (AnnRad*2)+(RingRad*2); %full circle on the y-axis
 
-Xpos=1:floor(((2*(RingRad+1)))*mscaleX):m;
-Ypos=1:floor(((2*(RingRad+1)))*mscaleY):n;
-randscale = PixelJitter;%min([m n])./24; %how many pixels noise to add to x/y positions
+HalfDisparity = round(0.5*MaxDisparity);
 
-NumRing=length(Xpos)*length(Ypos);%round(m/TeeSize)
-NumTemplate=1;
+Xpos    = round(linspace(1+HalfDisparity+RingRad,xTot-((RingRad)+1+HalfDisparity),round(xTot./floor(((2*(RingRad)+MaxDisparity+1))))));
+Ypos    = round(linspace(1+HalfDisparity+RingRad,yTot-((RingRad)+1+HalfDisparity),round(yTot./floor(((2*(RingRad)+MaxDisparity+1))))));
+[Xp2,Yp2]   = meshgrid(Xpos,Ypos); %make x/y locations for each circle
 
-mNew=(Xpos(length(Xpos))+((2*RingRad+1))); %ensure cross images will all fit onto mask
-nNew=(Ypos(length(Ypos))+((2*RingRad+1)));
-MaskIm=zeros(nNew,mNew);
+%[theta,rad] = cart2pol(Xp2(:)-1,Yp2(:)-1); %convert to polar coordinates in a single vector
+[theta,rad] = cart2pol(Xp2(:)-AnnRad-RingRad,Yp2(:)-AnnRad-RingRad); %convert to polar coordinates in a single vector
 
-for cc=1:NumTemplate
-    maskring(:,:,cc) = DrawRing(RingRad,RingRad-LineWidth,[0 360],(RingRad+1)*2,(RingRad+1)*2,1);
-    masksize = size(maskring(:,:,cc));
-end
-TempShuf=Shuffle(All(repmat((1:NumTemplate),[1 ceil(NumRing/NumTemplate)]))); %vector for shuffling through each template ring in diff positions
-xc=1;yc=1;
+%if LRUD<2 %left or right (0/1)
+%    [theta,rad] = cart2pol(Xp2(:)-1,Yp2(:)-AnnRad-RingRad); %convert to polar coordinates in a single vector
+%else %up or down half-circle (2/3)
+%    [theta,rad] = cart2pol(Xp2(:)-AnnRad-RingRad,Yp2(:)-1); %convert to polar coordinates in a single vector
+%end
+Ind         = find(rad<(AnnRad-1) & rad>(AnnRad-AnnWidth));
+Xpos        = All(Xp2(Ind));
+Ypos        = All(Yp2(Ind));
+
+NumRing     = numel(Xpos);%*length(Ypos);%round(m/TeeSize)
+
+%make ring template
+maskring = DrawRing(RingRad,RingRad-LineWidth,[0 360],(RingRad+1)*2,(RingRad+1)*2,con);
+ringsize = size(maskring);
+
+DXs = Shuffle(repmat([-1 0 1],[1 ceil(NumRing/3)+1])); %-1 is far, 0 no depth, 1=near
+
+MaskIm=zeros(yTot,xTot,2);
+
+%make annulus image
+
+%xc=1;yc=1;
 for nc=1:NumRing
-    x=0;y=0;
-    while (x<1 || x>(mNew-masksize(2)-1))
-        x = Xpos(xc) + round(randn(1,1).*randscale); %perturb positions
-    end
-    while (y<1 || y>(nNew-masksize(1)-1))
-        y = Ypos(yc) + round(randn(1,1).*randscale);
-    end
-    %x(x<1)=1; x(x>(mNew-masksize(2)-1))=mNew-masksize(2)-1; %clip
-    %y(y<1)=1; y(y>(nNew-masksize(1)-1))=nNew-masksize(1)-1; %clip
-    MaskIm(y:y+(masksize(1)-1),x:x+(masksize(1)-1))=MaskIm(y:y+(masksize(1)-1),x:x+(masksize(1)-1)) + maskring(:,:,TempShuf(nc));
-    MaskIm(MaskIm>1)=1;
-    if xc==length(Xpos)
-        xc=1;yc=yc+1; %loop through rows of xy
-    else
-        xc=xc+1;
-    end
-    MaskIm(MaskIm>con)=con; %correct for overlapping contrast regions
+    xLE=0; xRE=0; y=0;
+    xLE = Xpos(nc) + round(DXs(nc).*HalfDisparity) - RingRad; %shift circle if necessary for depth
+    xRE = Xpos(nc) - round(DXs(nc).*HalfDisparity) - RingRad; %RE version
+    y   = Ypos(nc) - RingRad; %regular structure on y axis
+    
+    MaskIm(y:y+(ringsize(1)-1),xLE:xLE+(ringsize(2)-1),1)=MaskIm(y:y+(ringsize(1)-1),xLE:xLE+(ringsize(2)-1),1) + maskring; %left eye
+    MaskIm(y:y+(ringsize(1)-1),xRE:xRE+(ringsize(2)-1),2)=MaskIm(y:y+(ringsize(1)-1),xRE:xRE+(ringsize(2)-1),2) + maskring; %right eye
 end
 
-%MaskIm = ImClip(MaskIm,[n+ceil(2*(RingRad+1)) m+ceil(2*(RingRad+1))]);
-[nNew mNew] = size(MaskIm);
+MaskIm(MaskIm>1)=1;
+MaskIm(MaskIm>con)=con; %correct for overlapping contrast regions
+
+% if LRUD==1 %right-side (need to flip left image)
+%     for ii=1:2
+%         MaskIm(:,:,ii) = fliplr(MaskIm(:,:,ii));
+%     end
+% elseif LRUD==3 %upper-side (need to flip lower image)
+%     for ii=1:2
+%         MaskIm(:,:,ii) = flipud(MaskIm(:,:,ii));
+%     end
+% end
+
+[ySize,xSize,zSize] = size(MaskIm);

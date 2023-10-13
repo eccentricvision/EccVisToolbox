@@ -128,6 +128,7 @@ else %old-style probit pre-fit
     end
     %set up guess vs. fixed parameters
     guess1    = [anal_ed50 abs(anal_sd) guessKP]; % 0.01];fitP(find(WhichFitParams)); % Initial guess for the parmeters to be fit
+    err2      = NaN;
 end
 
 [~,bestfit] = min(err2); %find the best of the above fits

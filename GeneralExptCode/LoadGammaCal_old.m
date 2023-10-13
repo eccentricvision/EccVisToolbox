@@ -25,9 +25,9 @@ elseif strcmp('eplt02',comp.machineName) %John's macbook
     gamCal       = '/Users/John/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
     TwoKBs       = 0; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
-    ExpScreen    = 2; %max(screens)
+    ExpScreen    = numscreens; %max(screens)
     MainScreen   = 1; %max(screens)
-elseif strcmp('mac13',comp.machineName) %lab iMac (NEC DiamondView monitor)
+elseif strcmp('mac13',comp.machineName) %old lab iMac (NEC DiamondView monitor)
     WhereRU       = 3;
     [~, username] = system('whoami');
     gamCal        = strcat('/Users/',username,'/Documents/MATLAB/Calibration/MonitorData/CalDataDiamondPlus.mat'); %select Gamma calibration files
@@ -35,27 +35,28 @@ elseif strcmp('mac13',comp.machineName) %lab iMac (NEC DiamondView monitor)
     gammaMethod   = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen     = numscreens; %max(screens)
     MainScreen    = 1; %min(screens)
-elseif strcmp('greenwood01',comp.machineName) %lab PC greenwood01 (now at MEH)
+elseif strcmp('greenwood01',comp.machineName) %lab PC
     WhereRU      = 4;
     RootDir      = which('startup.m'); %find out where the matlab files are - saves finding usernames etc.
     RootDir      = RootDir(1:end-9); %use end-9 to remove the 'startup.m' part
     
-    gamCal       = strcat(RootDir,'EccVisToolbox/Calibration/MonitorData/CalDataAsusVG278_MEHno3D.mat');%CalDataAsusVG278moorfields3Dmode.mat');
+    gamCal       = strcat(RootDir,'Calibration\MonitorData\CalDataSonyGDMFW900.mat');
     TwoKBs       = 1; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
-    ExpScreen    = numscreens;%3; %max(screens)
-    MainScreen   = 1;%2; %min(screens)
-elseif strcmp('DakinLab01',comp.machineName) %Old VacMan era Moorfields PC
+    ExpScreen    = 3; %max(screens)
+    MainScreen   = 2; %min(screens)
+elseif strcmp('DakinLab01',comp.machineName) %Moorfields PC
     WhereRU      = 5;
     gamCal       = 'C:\Users\JohnG\MATLAB\Calibration\MonitorData\CalDataAsusVG278moorfields3Dmode.mat';
     TwoKBs       = 1; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen    = 2; %max(screens)
     MainScreen   = 3; %min(screens)
-elseif strcmp('mac30',comp.machineName) %Annie's office iMac
+elseif strcmp('mac30',comp.machineName) %newer lab iMac (formerly Annie's office iMac)
     WhereRU      = 6;
-    gamCal       = '/Users/anisa/Documents/MATLAB/EccentricVisionToolbox/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
-    TwoKBs       = 0; %one keyboard or two?
+    [~, username] = system('whoami');
+    gamCal        = strcat('/Users/',username,'/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalDataDiamondPlus.mat'); %select Gamma calibration files
+    TwoKBs       = 1; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen    = 2;
     MainScreen   = 1;
