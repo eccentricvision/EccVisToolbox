@@ -33,20 +33,20 @@ else %get the inputs and save the file, return 'subject' as well
         subject.GenderLabel = 'female';
     end
     
-%     subject.Hand   = DefInput('Handedness? 0=Left, 1=Right',1); %handedness
-%     if subject.Hand==0
-%         subject.HandLabel = 'left '; %store a string just to be sure there's no ambiguity
-%     else
-%         subject.HandLabel = 'right';
-%     end
+    %     subject.Hand   = DefInput('Handedness? 0=Left, 1=Right',1); %handedness
+    %     if subject.Hand==0
+    %         subject.HandLabel = 'left '; %store a string just to be sure there's no ambiguity
+    %     else
+    %         subject.HandLabel = 'right';
+    %     end
     
     if Group==0 %control kid
-%         subject.DomEye = DefInput('Dominant Eye? 0=Left, 1=Right',0); %dominant sighting eye
-%         if subject.DomEye==0
-%             subject.DomEyeLabel = 'left ';%store a string just to be sure there's no ambiguity
-%         else
-%             subject.DomEyeLabel = 'right';
-%         end
+        %         subject.DomEye = DefInput('Dominant Eye? 0=Left, 1=Right',0); %dominant sighting eye
+        %         if subject.DomEye==0
+        %             subject.DomEyeLabel = 'left ';%store a string just to be sure there's no ambiguity
+        %         else
+        %             subject.DomEyeLabel = 'right';
+        %         end
     elseif Group==1 %child with amblyopia
         subject.AmbEye   = DefInput('Amblyopic Eye? 0=Left, 1=Right',0); %which eye has amblyopia
         subject.AmbType  = DefInput('Amblyopia type? 1=Strab, 2=Aniso, 3=Both, 4=Other',1);
@@ -62,8 +62,54 @@ else %get the inputs and save the file, return 'subject' as well
         end
         subject.TestSession = 1; %test session is 1 if this is the first time the code is being run (denotes how many times this child has been seen before)
     elseif Group==2 %CRB1 kids
-        subject.GroupLabel = 'CRB1';
+        subject.WhichGroup = DefInput('Which Group? 1=CRB1, 2=Control',1);%
+         switch subject.WhichGroup
+            case 1
+                subject.GroupLabel = 'CRB1';
+            case 2
+                subject.GroupLabel = 'Control';
+         end
         subject.logMARval  = DefInput('Enter orthoptic logMAR acuity',0);
+    elseif Group==3 %VFCN kids
+        subject.WhichGroup = DefInput('Nystagmus subtype? 1=IINS, 2=Albinism, 3=Control',1);%
+        switch subject.WhichGroup
+            case 1
+                subject.GroupLabel = 'IINS';
+            case 2
+                subject.GroupLabel = 'Albinism';
+            case 3
+                subject.GroupLabel = 'Control';
+        end
+        subject.logMARval  = DefInput('Enter orthoptic logMAR acuity',0);
+        if subject.WhichGroup<3
+            subject.WaveformType  = DefInput('Waveform type? 1=jerk,2=pendular,3=PAN,4=other',0);
+            switch subject.WaveformType
+                case 1
+                    subject.WaveformLabel = 'Jerk';
+                case 2
+                    subject.WaveformLabel = 'Pendular';
+                case 3
+                    subject.WaveformLabel = 'PAN';
+                case 4
+                    subject.WaveformLabel = 'Other';
+            end
+            
+            subject.AmblyopiaPresent = DefInput('Amblyopia present? 0=no, 1=yes',0);
+            if subject.AmblyopiaPresent==1
+                subject.AmbEye   = DefInput('Amblyopic Eye? 0=Left, 1=Right',0); %which eye has amblyopia
+                subject.AmbType  = DefInput('Amblyopia type? 1=Strab, 2=Aniso, 3=Both, 4=Other',1);
+                switch subject.AmbType
+                    case 1
+                        subject.AmbLabel = 'Strabismus';
+                    case 2
+                        subject.AmbLabel = 'Anisometropia';
+                    case 3
+                        subject.AmbLabel = 'Mixed Strab/Aniso';
+                    case 4
+                        subject.AmbLabel = 'Other';
+                end
+            end
+        end
     end
     
     disp('  '); %some space to separate the input options a little
