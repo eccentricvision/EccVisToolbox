@@ -20,7 +20,7 @@ if strcmp('greenwood03',comp.machineName) %John's office
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen    = numscreens; %max(screens)
     MainScreen   = 1; %min(screens)
-elseif strcmp('eplt02',comp.machineName) %John's macbook
+elseif strcmp('eplt02',comp.machineName) %John's old macbook
     WhereRU      = 2;
     gamCal       = '/Users/John/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
     TwoKBs       = 0; %one keyboard or two?
@@ -76,6 +76,13 @@ elseif strcmp('EyelinkWestonCRF',comp.machineName) %Weston CRF at Moorfields
 elseif strcmp('mac10',comp.machineName) %lab iMac with Display++ monitor
     WhereRU      = 9;
     gamCal       = '/Users/lab/Documents/MATLAB/Calibration/MonitorData/CalDataDisplayPlusPlus.mat'; %select Gamma calibration files
+    TwoKBs       = 1; %one keyboard or two?
+    gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
+    ExpScreen    = 2; %max(screens)
+    MainScreen   = 1; %max(screens)
+elseif strcmp('greenwoodlt04',comp.machineName) %John's macbook air
+    WhereRU      = 10;
+    gamCal       = '/Users/John/Documents/MATLAB/EccVisToolbox/Calibration/MonitorData/CalData.mat'; %select Gamma calibration files
     TwoKBs       = 1; %one keyboard or two?
     gammaMethod  = 0; %0/1/2 = standard LUT/bits++/bitstealing
     ExpScreen    = 2; %max(screens)

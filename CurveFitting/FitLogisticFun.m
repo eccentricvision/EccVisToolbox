@@ -10,7 +10,7 @@ function [kEst,midptEst,minvalEst,maxvalEst,err1] = FitLogisticFun(xvals,yvals,W
 % 
 % John Greenwood, v1.0 March 2020 lockdown
 
-if ~exist('WhichFitParams')
+if nargin<3 %~exist('WhichFitParams')
     WhichFitParams=[1 1 1 1];
 end
 
@@ -39,7 +39,9 @@ maxvalGuess = max(yvals(:));
 %set up guess vs. fixed parameters
 guess1    = [kGuess midptGuess minvalGuess maxvalGuess]; % 0.01];fitP(find(WhichFitParams)); % Initial guess for the parmeters to be fit
 fixValsIn = NaN(1,4); %put into the same format as the guess parameters
-if exist('fixVals','var') %if there are fixed parameters to input
+if nargin<4 %exist('fixVals','var') %if there are fixed parameters to input
+    fixValsIn=[];
+else %use fixvals if supplied
     guess1(find(~WhichFitParams))    = fixVals; % If user gave us some fixed params slot them into fixVals
     fixValsIn(find(~WhichFitParams)) = fixVals;
 end
@@ -50,7 +52,9 @@ end
 %get the final parameters
 finalParams=NaN(1,4);%fitP;
 finalParams(find(WhichFitParams))  = outpt(find(WhichFitParams)); %fitted parameters
-finalParams(find(~WhichFitParams)) = fixVals; %fixed values
+if nargin==4
+    finalParams(find(~WhichFitParams)) = fixVals; %fixed values
+end
 kEst      = finalParams(1);
 midptEst  = finalParams(2);
 minvalEst = finalParams(3);

@@ -1,6 +1,6 @@
 % STARSINE Generates phase congruent star shaped sine wave grating
 %
-% Usage:    im = starsine(sze, nCycles, nScales, ampExponent, offset)
+% Usage:    im = StarSine(sze, nCycles, nScales, ampExponent, offset)
 %
 % Arguments:
 %      sze         - The size of the square image to be produced.
@@ -28,6 +28,7 @@
 %                                              triangular 
 % nScales 50, ampExponent -1.5, offset 0   - Looks like a square but is not.
 %
+% e.g. im = starsine(800, 15, 50, -1, 0); imshow(im);
 % See also: CIRCSINE, STEP2LINE
 
 % Copyright (c) 2010 Peter Kovesi
@@ -47,7 +48,7 @@
 
 % December 2010
 
-function im = starsine(sze, nCycles, nScales, ampExponent, offset)
+function im = StarSine(sze, nCycles, nScales, ampExponent, offset)
 
     if ~exist('offset', 'var')
 	offset = 0;

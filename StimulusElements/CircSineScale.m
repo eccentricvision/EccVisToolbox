@@ -1,7 +1,7 @@
-% CIRCSINE  Generates circular sine wave grating
+% CIRCSINESCALE  Generates circular sine wave grating
 % Can also be use to construct phase congruent patterns
 %
-% Usage:    im = CircSine(sze, wavelength, nScales, ampExponent, offset, p, trim)
+% Usage:    im = CircSineScale(sze, wavelength, nScales, ampExponent, offset, p, trim, mult)
 %
 % Arguments:
 %      sze         - The size of the square image to be produced.
@@ -27,6 +27,8 @@
 %      trim        - Optional flag indicating whether you want the
 %                    circular pattern trimmed from the corners leaving
 %                    only complete cicles. Defaults to 0.
+%      mult        - multiplier for the x,y axes to scale up the size of
+%                    the rings with distance from the centre
 %
 % Examples:
 % nScales = 1             - You get a simple circular sine wave pattern 
@@ -35,37 +37,29 @@
 % nScales 50, ampExponent -1.5, offset pi/4 - Something in between square and
 %                                             triangular 
 % nScales 50, ampExponent -1.5, offset 0    - Looks like a square but is not.
+% NB. when we log-scaled the meshgrid it inverts the effect of the
+% amplitude exponent so numbers need to be positive to get a square wave,
+% negative gives a sine wave
 %
-% e.g. im = circsine(800, 20, 50, -1, 0);imshow(im);%, p, trim)
+% e.g. im = CircSineScale(800, 20, 50, 2, 0, 2, 0, 2);imshow(im);%, p, trim)
 % See also: STARSINE, STEP2LINE
 
 
 % Copyright (c) 2003-2010 Peter Kovesi
-% Centre for Exploration Targeting
-% School of Earth and Environment
-% The University of Western Australia
-% peter.kovesi at uwa edu au
-% 
-% Permission is hereby granted, free of charge, to any person obtaining a copy
-% of this software and associated documentation files (the "Software"), to deal
-% in the Software without restriction, subject to the following conditions:
-% 
-% The above copyright notice and this permission notice shall be included in 
-% all copies or substantial portions of the Software.
-%
-% The Software is provided "as is", without warranty of any kind.
+% Modified J Greenwood October 2024 to add multiplier
 
 % May 2003 - Original version
 % Nov 2006 - Trim flag added
 % Dec 2010 - Ability to construct phase congruent patterns, order of argument
 %            list changed
 
-function im = CircSine(sze, wavelength, nScales, ampExponent, offset, p, trim)
+function im = CircSineScale(sze, wavelength, nScales, ampExponent, offset, p, trim, mult)
 
     if ~exist('trim', 'var'),          trim = 0;          end
     if ~exist('p', 'var'),             p = 2;             end
     if ~exist('ampExponent', 'var'),   ampExponent = -1;  end
     if ~exist('nScales', 'var'),       nScales = 1;       end    
+    if ~exist('mult','var'),           mult    = 1;       end %no scaling by default if not specified
 
     % If we have one scale, hence just making a sine wave, and offset is not
     % specified set it to pi/2 to give cintinuity at the centre
@@ -90,6 +84,12 @@ function im = CircSine(sze, wavelength, nScales, ampExponent, offset, p, trim)
     end
     
     [x,y] = meshgrid(l:u);
+
+    [theta,rad] = cart2pol(x,y); %convert to polar coordinates
+    rad         = log10(rad.*mult);%.*(rad.*mult);
+    [x,y]       = pol2cart(theta,rad);
+%    x     = x.*mult;
+%    y     = y.*mult;
     r = (x.^p + y.^p).^(1/p);
 
     im = zeros(size(r));
